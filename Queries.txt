@@ -1,0 +1,51 @@
+/* 1- Who Are The Most 15 Earned Artists? */
+SELECT ar.Name, SUM(il.Quantity) * (il.UnitPrice) AS Earned
+FROM Customer cu
+JOIN Invoice i
+	ON cu.CustomerId = i.CustomerId
+JOIN InvoiceLine il
+	ON i.InvoiceId = il.InvoiceId
+JOIN Track tr
+	ON il.TrackId = tr.TrackId
+JOIN Album ab
+	ON tr.AlbumId = ab.AlbumId
+JOIN Artist ar
+	ON ab.ArtistId = ar.ArtistId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 15;
+
+
+/* 2- How much each USA Customer spent? */
+SELECT cu.FirstName || " " || cu.LastName Customer_name, cu.Country, sum(i.total) AS Total_Amount
+FROM Customer cu
+JOIN Invoice i
+	ON cu.CustomerId = i.CustomerId
+WHERE cu.Country = 'USA'
+Group BY 1,2
+ORDER BY 3 DESC;
+
+
+/* 3- top 10 artists based on the numbers of tracks */
+SELECT ar.Name, count(tr.Name) Tracks
+FROM Track tr
+JOIN Album al
+	ON tr.AlbumId = al.AlbumId
+JOIN Artist ar
+	ON al.ArtistId = ar.ArtistId
+GROUP BY 1
+ORDER BY 2 DESC
+limit 10;
+
+/* 4- what is the genre of music distributed in order of preference in Canada? */
+SELECT ge.Name, i.BillingCountry, count(*) AS Invoices_num
+FROM Invoice i
+JOIN InvoiceLine il
+	ON i.InvoiceId = il.InvoiceId
+JOIN Track tr
+	ON il.TrackId = tr.TrackId
+JOIN Genre ge
+	ON tr.GenreId = ge.GenreId
+GROUP BY 1, 2
+HAVING i.BillingCountry = 'Canada'
+ORDER BY 3 DESC;
